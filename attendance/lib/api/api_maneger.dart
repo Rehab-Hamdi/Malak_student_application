@@ -24,13 +24,11 @@ class ApiManeger {
     return student ;
   }
 
-  static Future <CourseLectures> GetLecture() async {
+  static Future <CourseLectures> GetLecture(int courseId) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    var id = prefs.get('userId');
-    var courseInstance = prefs.get('courseId');
-    //courseID
-    var courseId= prefs.getInt('courseID');
-    Uri url = Uri.parse("https://attendance-proof-production.up.railway.app/tracker/attendances/?attend=&lecture=&student=${1}&lecture__course_instance=${1}");
+    var id = prefs.get('studentId');
+    print('api courseId = ${courseId}');
+    Uri url = Uri.parse("https://attendance-proof-production.up.railway.app/tracker/attendances/?attend=&lecture=&student=${id}&lecture__course_instance=${courseId}");
     http.Response response = await http.get(url);
     var json = jsonDecode(response.body);
     CourseLectures lec = CourseLectures.fromJson(json);

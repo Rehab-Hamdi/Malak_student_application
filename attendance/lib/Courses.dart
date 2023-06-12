@@ -1,4 +1,3 @@
-
 import 'package:attendance/api/api_maneger.dart';
 import 'package:attendance/dio_helper.dart';
 import 'package:flutter/cupertino.dart';
@@ -9,14 +8,20 @@ import 'Notifications.dart';
 import 'api_models/StudentCourses.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class Courses extends StatelessWidget {
-   Courses({Key? key}) : super(key: key);
+class Courses extends StatefulWidget {
+  Courses({Key? key}) : super(key: key);
+  @override
+  State<Courses> createState() => _CoursesState();
+}
 
-   void _retrieveSharedPreferences(courseID) async {
-     SharedPreferences prefs = await SharedPreferences.getInstance();
-     prefs.setInt('CourseId', courseID!);
-     print("courseID =${courseID}");
-   }
+class _CoursesState extends State<Courses> {
+   int selectedLectureID=1;
+
+  // void _retrieveSharedPreferences() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   prefs.setInt('courseId', selectedLectureID);
+  //   // print("courseID =${selectedLectureID}");
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -39,21 +44,30 @@ class Courses extends StatelessWidget {
           ),
           body: FutureBuilder(
               future: ApiManeger.GetStudentCourses(),
-              builder: (BuildContext, snapshot)  {
+              builder: (BuildContext, snapshot) {
                 if (snapshot.hasData) {
                   StudentCourses? studentCourses =
                       snapshot.data as StudentCourses?;
 
                   return Column(
                     children: studentCourses?.results?.map((result) {
-                      int? courseID= result.course?.id;
-                      _retrieveSharedPreferences(courseID);
                           String courseCode = result.course?.code ?? '';
                           return Column(
                             children: [
-                              InkWell(onTap: () {  Navigator.push(
-                                context,    MaterialPageRoute(builder: (context) => CourseAttendance(courseCode:courseCode)),
-                              );},
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    selectedLectureID = result.course?.id??1;
+                                  });
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CourseAttendance(
+                                            courseCode: courseCode,
+                                          courseId: selectedLectureID,
+                                        )),
+                                  );
+                                },
                                 child: Padding(
                                   padding: const EdgeInsets.all(10.0),
                                   child: Container(
@@ -78,7 +92,8 @@ class Courses extends StatelessWidget {
                               SizedBox(height: 20),
                             ],
                           );
-                        }).toList() ?? [],
+                        }).toList() ??
+                        [],
                   );
                 } else {
                   return Center(child: const CircularProgressIndicator());

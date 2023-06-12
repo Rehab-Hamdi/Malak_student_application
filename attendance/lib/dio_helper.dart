@@ -65,8 +65,8 @@ static List<Map>? courseList;
         .get('auth/users/me/', options: Options(headers: Headers));
      if(response.statusCode == 200){
     await prefs.setString('studentName', response.data['username']);
-    await prefs.setInt('userId', response.data['id']);
-    await prefs.setInt('courseId', response.data['courseInstance']);
+    await prefs.setInt('studentId', response.data['student']);
+
 
     email= response.data['email'] ;
        nameStudent= response.data['first_name'] +response.data['last_name'] ;
